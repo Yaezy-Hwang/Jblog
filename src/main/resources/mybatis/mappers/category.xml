@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="category">
+
+	<insert id="insertDefaultCate" parameterType="String">
+		<![CDATA[
+		
+			INSERT INTO category
+			VALUES(seq_category_no.nextval, #{id}, '미분류', '기본으로 만들어지는 카테고리 입니다.', sysdate)
+
+		 ]]>
+	</insert>
+	
+	<insert id="insertCategory" parameterType="com.javaex.vo.CategoryVo">
+		<![CDATA[
+		
+			INSERT INTO category
+			VALUES(#{cateNo}, #{id}, #{cateName}, #{description}, sysdate)
+
+		 ]]>
+	</insert>
+	
+	<select id="selectNextVal" parameterType="com.javaex.vo.CategoryVo" resultType="int">
+		<![CDATA[
+			SELECT seq_category_no.nextval FROM dual
+		]]>
+	</select>
+	
+	<!-- 블로그 메인에서 리스트 보기 -->
+	<select id="selectCateList" parameterType="String" resultType="com.javaex.vo.CategoryVo">
+		<![CDATA[
+	
+			SELECT cateno "cateNo", catename "cateName"
+			FROM category
+			where id = #{id}
+			ORDER BY cateno DESC
+
+		 ]]>
+	</select>
+	
+	<!-- 설정에서 카테고리 리스트 보기(post 갯수 포함) -->
+	<select id="selectAdminList" parameterType="String" resultType="com.javaex.vo.CategoryVo">
+		<![CDATA[
+		
+			SELECT co.cateno "cateNo", cate.catename "cateName",
+			  	   co.countpost "countPost", cate.description
+			FROM category cate, 
+			   	 (SELECT c.cateno, count(p.postno) countpost
+			   	  FROM category c left outer join post p
+    			  ON p.cateno = c.cateno
+			      GROUP BY c.cateno)co
+			WHERE cate.cateno = co.cateno
+			AND cate.id = #{id}
+			order by co.cateno desc
+		
+		]]>
+	</select>
+	
+	<!-- 설정에서 새 카테고리 붙이기 -->
+	<select id="selectNewCate" parameterType="int" resultType="com.javaex.vo.CategoryVo">
+		<![CDATA[
+		
+			SELECT cateno "cateNo",
+			   	   catename "cateName",
+			   	   description
+			FROM category 
+			WHERE cateno = #{nextSeq}
+		
+		]]>
+	</select>
+	
+	<delete id="deleteCategory" parameterType="int">
+		<![CDATA[
+		
+			DELETE FROM category
+			WHERE cateNo = #{cateNo}
+	
+		]]>
+	</delete>
+
+
+</mapper>

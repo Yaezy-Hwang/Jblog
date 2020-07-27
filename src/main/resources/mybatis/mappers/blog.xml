@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blog">
+
+	
+	<select id="selectBlogInfo" parameterType="String" resultType="com.javaex.vo.BlogVo">
+		<![CDATA[
+		
+			SELECT b.id,
+			 	   b.blogtitle "blogTitle",
+				   b.logofile "logoFile",
+				   u.username "userName"
+			FROM blog b, users u
+			where b.id = u.id
+			and u.id = #{id}
+
+		 ]]>
+	</select>
+	
+	<select id="selectByKeyword" parameterType="String" resultType="com.javaex.vo.BlogVo">
+		<![CDATA[
+		
+			SELECT b.id,
+			       u.username "userName",
+			       b.blogtitle "blogTitle",
+       			   b.logofile "logoFile",
+     		   	   to_char(u.joindate, 'yyyy-mm-dd') "joinDate"
+			FROM blog b, users u
+			WHERE b.id = u.id
+			AND b.id LIKE '%'|| #{keyword} ||'%'
+			OR u.username LIKE '%'|| #{keyword} ||'%'
+			OR b.blogtitle LIKE '%'|| #{keyword} ||'%'
+
+		 ]]>
+	</select>
+
+	<insert id="insertBlog" parameterType="com.javaex.vo.UserVo">
+		<![CDATA[
+		
+			INSERT INTO blog
+			VALUES(#{id}, #{userName} || '의 블로그입니다.', 'default')
+
+		 ]]>
+	</insert>
+	
+	<update id="updateBlogBasic" parameterType="com.javaex.vo.BlogVo">
+		<![CDATA[
+		
+			UPDATE blog
+			SET blogtitle = #{blogTitle}
+		]]>
+		
+		<if test = 'logoFile != ""'>
+			<![CDATA[
+			    ,logofile = #{logoFile}
+			]]>
+		</if>
+		
+		<![CDATA[
+			WHERE id = #{id}
+		 ]]>
+	</update>
+
+	
+
+</mapper>
