@@ -33,6 +33,7 @@
 						<td></td>
 						<td id="tdMsgOk" colspan="2">사용할 수 있는 아이디 입니다.</td>
 						<td id="tdMsgNo" colspan="2">다른 아이디로 가입해 주세요.</td> 
+						<td id="tdMsgempty" colspan="2">아이디를 입력해 주세요.</td> 
 					</tr>
 					<tr>
 						<td><label for="txtPassword">패스워드</label></td>
@@ -69,18 +70,20 @@
 
 </body>
 <script type="text/javascript">
+	//아이디 중복체크 변수 선언
+	var uniqueId = false;
 
 	//아이디 체크 메세지 초기화
 	window.onload = function(){
 		$("#tdMsgOk").hide();
 		$("#tdMsgNo").hide();
+		$("#tdMsgempty").hide();
 	};
 	
 	//중복 아이디 체크
 	$("#btnIdCheck").on("click", function(){
-		
 		var newId = $("#txtId").val();
-
+		
 		$.ajax({
 			
 			url : "${pageContext.request.contextPath}/user/idcheck",		
@@ -93,11 +96,22 @@
 				
 				/*성공시 처리해야될 코드 작성*/
 				if(result == true){
+					if(newId == ""){ //아이디가 공백일 경우
+						$("#tdMsgOk").hide();
+						$("#tdMsgNo").hide();
+						$("#tdMsgempty").show();
+						
+					}else{ //사용 가능한 아이디일 경우
 					$("#tdMsgNo").hide();
 					$("#tdMsgOk").show();
-				} else{
+					$("#tdMsgempty").hide();
+					uniqueId = true;
+					}
+					
+				}else{ //중복 아이디인 경우
 					$("#tdMsgOk").hide();
 					$("#tdMsgNo").show();
+					$("#tdMsgempty").hide();
 				}
 				
 			},
@@ -107,9 +121,34 @@
 		})
 	});
 	
-	//약관 동의 체크
+	
 	$("#joinForm").on("submit", function(){
+
+		//아이디를 입력해 주세요
+		if($(txtId).val() == ""){
+			alert("아이디를 입력해주세요");
+			return false;
+		}
 		
+		// 아이디 중복체크를 해주세요
+		if(uniqueId == false){
+			alert("아이디 중복체크를 해주세요");
+			return false;
+		}
+		
+		//패스워드를 입력해 주세요
+		if($(txtPassword).val() == ""){
+			alert("패스워드를 입력해주세요");
+			return false;
+		}
+		
+		//이름을 입력해 주세요
+		if($(txtUserName).val() == ""){
+			alert("이름 입력해주세요");
+			return false;
+		}
+		
+		//약관 동의 체크
 		var agree = $("#chkAgree").is(":checked");
 		
 		if(agree == true){

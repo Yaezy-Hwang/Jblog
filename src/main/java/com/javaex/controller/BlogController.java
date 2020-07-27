@@ -10,10 +10,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.javaex.service.BlogService;
 import com.javaex.vo.BlogVo;
 import com.javaex.vo.CategoryVo;
+import com.javaex.vo.CommentVo;
 import com.javaex.vo.PostVo;
 
 @Controller
@@ -41,6 +43,9 @@ public class BlogController {
 		PostVo postVo = blogService.getPost(id, crtCateNo, postNo);
 		model.addAttribute("postVo", postVo);
 		
+		List<CommentVo> commentList = blogService.getCmtList(crtCateNo, postNo);
+		model.addAttribute("commentList", commentList);
+		
 		return "blog/blog-main";
 	}
 	
@@ -52,6 +57,14 @@ public class BlogController {
 		session.invalidate();
 		
 		return "redirect:/"+id;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/{id}/comment")
+	public CommentVo comment(@PathVariable String id, CommentVo commentVo) {
+		System.out.println("/새 댓글 붙이기 API");
+		
+		return blogService.addCmt(commentVo);
 	}
 	
 	

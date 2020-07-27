@@ -9,6 +9,7 @@
 <title>JBlog</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/jblog.css">
 <script type="text/javascript" src="${pageContext.request.contextPath}/assets/js/jquery/jquery-1.12.4.js"></script>
+
 </head>
 
 <body>
@@ -46,7 +47,7 @@
 					<div id="postBox" class="clearfix">
 							<div id="postTitle" class="text-left"><strong>${postVo.postTitle}</strong></div>
 							<div id="postDate" class="text-left"><strong>${postVo.regDate}</strong></div>
-							<div id="postNick">래미(iremys)님</div>
+							<div id="postNick">${blogVo.userName}(${blogVo.id})님</div>
 					</div>
 					<!-- //postBox -->
 				
@@ -63,11 +64,44 @@
 							<div id="postNick"></div>
 					</div>
 					<!-- //postBox -->
-				
-					<div id="post" >
-					</div>
+
 					<!-- //post -->
 				</c:if>
+				<div id="comment" >
+					<c:if test="${!empty authUser}">
+						<form>
+							<table>
+								<colgroup>
+									<col style="width: 100px;">
+									<col style="width: 590px;">
+									<col style="width: 100px;">
+								</colgroup>
+								<tr>
+									<td>댓글</td>
+									<td><input id="txtComment" type="text" name="comment" value=""></td>
+									<td><button id="btnComm" type="button">등록</button></td>
+								</tr>
+							</table>
+						</form>
+					</c:if>
+					<br>
+					<table id="commT">
+						<colgroup>
+							<col style="width: 100px;">
+							<col style="width: 500px;">
+							<col style="width: 190px;">
+						</colgroup>
+						<c:forEach items="${commentList}" var="cmt">
+							<tr>
+								<td>${cmt.userName}</td>
+								<td>${cmt.cmtContent}</td>
+								<td>${cmt.regDate}</td>
+							</tr>
+						</c:forEach>
+					</table>
+					
+					
+				</div>
 				
 				<div id="list">
 					<div id="listTitle" class="text-left"><strong>카테고리의 글</strong></div>
@@ -98,4 +132,50 @@
 	</div>
 	<!-- //wrap -->
 </body>
+<script type="text/javascript">
+	$("#btnComm").on("click",function(){
+		
+		var commentVo = {
+			cmtContent: $("#txtComment").val(),
+			postNo: ${postVo.postNo},
+			userNo: ${authUser.userNo}
+		};
+		
+		$.ajax({
+
+			//보낼 때 옵션
+			url : "${pageContext.request.contextPath}/${blogVo.id}/comment",
+			type : "post",
+			data : commentVo,
+
+			//받을 때 옵션
+			dataType : "json",
+			success : function(newCmt) {
+				render(newCmt);
+
+			},
+			error : function(XHR, status, error) {
+				console.error(status + " : " + error);
+			}
+		})
+			
+	});
+
+	function render(commentVo){
+		var str = '';
+
+		str += '<tr>';
+		str += '	<td>'+ commentVo.userName +'</td>';
+		str += '	<td>'+ commentVo.cmtContent +'</td>';
+		str += '	<td>'+ commentVo.regDate +'</td>';
+		str += '</tr>';
+		
+		$("#commT").prepend(str);
+		
+	};
+
+
+
+
+</script>
 </html>

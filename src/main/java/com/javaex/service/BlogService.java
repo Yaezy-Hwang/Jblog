@@ -12,6 +12,7 @@ import com.javaex.dao.CategoryDao;
 import com.javaex.dao.PostDao;
 import com.javaex.vo.BlogVo;
 import com.javaex.vo.CategoryVo;
+import com.javaex.vo.CommentVo;
 import com.javaex.vo.PostVo;
 
 @Service
@@ -65,10 +66,34 @@ public class BlogService {
 			
 		}else {
 			pMap.put("cateNo", crtCateNo);
-			
 		}
 		
 		return postDao.selectPostList(pMap);
+	}
+
+	public CommentVo addCmt(CommentVo commentVo) {
+		System.out.println("/게시물에 댓글쓰기 service");
+		
+		int cmtNo = postDao.insertCmt(commentVo);
+		System.out.println("select 키로 받은 cmtNo:" + cmtNo);
+		
+		return postDao.selectByNo(cmtNo);
+	}
+
+	public List<CommentVo> getCmtList(int crtCateNo, int postNo) {
+		System.out.println("/댓글 가져오기 service");
+		
+		Map<String, Object> pMap = new HashMap<>();
+		pMap.put("postNo", postNo);
+		
+		if(crtCateNo == 0) {
+			pMap.put("cateNo", postDao.recentCateNo());
+			
+		}else {
+			pMap.put("cateNo", crtCateNo);
+		}
+		
+		return postDao.selectCmtList(pMap);
 	}
 
 }

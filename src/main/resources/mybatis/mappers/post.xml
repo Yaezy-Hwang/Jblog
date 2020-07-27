@@ -16,7 +16,8 @@
 		<![CDATA[
 		
 			SELECT po.posttitle "postTitle",
-			       po.postcontent "postContent"
+			       po.postcontent "postContent",
+			       po.postno "postNo"
 			FROM category co left outer join post po
 			ON po.cateno = co.cateno
 			WHERE id = #{id}
@@ -54,26 +55,77 @@
 		]]>
 	</select>
 	
+	<insert id="insertCmt" parameterType="com.javaex.vo.CommentVo">
+		<selectKey keyProperty="cmtNo" resultType="int" order="BEFORE">
+			SELECT seq_comments_no.nextval FROM dual
+		</selectKey>
+	
+	<![CDATA[
+	
+		INSERT INTO comments
+		VALUES(#{cmtNo}, #{postNo}, #{userNo}, #{cmtContent}, sysdate)
+	
+	]]>
+	</insert>
+	
+	<select id="selectByNo" parameterType="int" resultType="com.javaex.vo.CommentVo">
+	<![CDATA[
+	
+		SELECT u.username "userName", c.cmtcontent "cmtContent", to_char(c.regdate, 'yyyy/mm/dd') "regDate"
+		FROM comments c, users u
+		WHERE c.userno = u.userno
+		AND c.cmtno = #{cmtNo}
+	
+	]]>
+	</select>
+	
+	<select id="selectCmtList" parameterType="map" resultType="com.javaex.vo.CommentVo">
+	<![CDATA[
+	
+		SELECT u.username "userName", c.cmtcontent "cmtContent", to_char(c.regdate, 'yyyy/mm/dd') "regDate"
+		FROM comments c, users u
+		WHERE c.userno = u.userno
+		]]>
+		<if test="postNo == 0">
+			<![CDATA[
+				AND c.postno =
+				    (SELECT max(p.postNo)
+				    FROM category c left outer join post p
+				    ON p.cateno = c.cateno
+				    WHERE c.cateno = #{cateNo})
+			]]>
+		</if>
+		<if test="postNo != 0">
+			<![CDATA[	
+				AND c.postno = #{postNo}
+			]]>
+		</if>
+		<![CDATA[
+		ORDER BY c.cmtno desc
+		]]>
+	
+	</select>
+	
 	<!-- 최신 카테고리 넘버 -->
 	<select id="recentCateNo" resultType="int">
-		<![CDATA[
+	<![CDATA[
 		
 			SELECT max(cateNo)
 			FROM category
 			
-		]]>
+	]]>
 	</select>
 
 	<!-- 현 카테고리 최신 포스트 넘버 -->
 	<select id="recentPostNo" parameterType="int" resultType="int">
-		<![CDATA[
+	<![CDATA[
 		
 			SELECT max(p.postNo)
 			FROM category c left outer join post p
 			on p.cateno = c.cateno
 			where c.cateno = #{recentCateNo}
 			
-		]]>
+	]]>
 	</select>
 	
 

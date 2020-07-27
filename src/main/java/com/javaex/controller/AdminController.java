@@ -44,7 +44,6 @@ public class AdminController {
 		return "redirect:/"+id+"/admin/basic";
 	}
 	
-	
 	@RequestMapping("/category")
 	public String adminGetCateInfo(@PathVariable String id, Model model) {
 		System.out.println("/admin/category");

@@ -8,13 +8,20 @@ public class BlogVo {
  	private String userName;
  	private String joinDate;
  	
- 	
  	public BlogVo() {}
 
 	public BlogVo(String id, String blogTitle, String logoFile) {
 		this.id = id;
 		this.blogTitle = blogTitle;
 		this.logoFile = logoFile;
+	}
+
+	public BlogVo(String id, String blogTitle, String logoFile, String userName, String joinDate) {
+		this.id = id;
+		this.blogTitle = blogTitle;
+		this.logoFile = logoFile;
+		this.userName = userName;
+		this.joinDate = joinDate;
 	}
 
 	public String getId() {

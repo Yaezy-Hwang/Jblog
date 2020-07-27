@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.javaex.vo.CommentVo;
 import com.javaex.vo.PostVo;
 
 @Repository
@@ -48,6 +49,26 @@ public class PostDao {
 		System.out.println("최신 포스트 넘버는: "+recentPostNo);
 		
 		return recentPostNo;
+	}
+
+	public int insertCmt(CommentVo commentVo) {
+		System.out.println("/게시물에 댓글쓰기 dao");
+		
+		sqlSession.insert("post.insertCmt", commentVo);
+		
+		return commentVo.getCmtNo();
+	}
+
+	public CommentVo selectByNo(int cmtNo) {
+		System.out.println("/방금 그 댓글 가져오기");
+		
+		return sqlSession.selectOne("post.selectByNo", cmtNo);
+	}
+
+	public List<CommentVo> selectCmtList(Map<String, Object> pMap) {
+		System.out.println("/댓글 리스트 가져오기");
+		
+		return sqlSession.selectList("post.selectCmtList", pMap);
 	}
 
 
