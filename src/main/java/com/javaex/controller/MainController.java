@@ -18,11 +18,13 @@ public class MainController {
 	private MainService mainService;
 
 	@RequestMapping("/main")
-	public String main(@RequestParam(value="keyword", required = false) String keyword, Model model) {
+	public String main(@RequestParam(value="keyword", required = false) String keyword,
+					   @RequestParam(value="kwdOpt", required = false) String kwdOpt, Model model) {
+		
 		System.out.println("/main");
 		
 		if(keyword != null) {
-			List<BlogVo> resultList = mainService.search(keyword);
+			List<BlogVo> resultList = mainService.search(keyword, kwdOpt);
 			model.addAttribute("rList", resultList);
 			
 			return "main/index";

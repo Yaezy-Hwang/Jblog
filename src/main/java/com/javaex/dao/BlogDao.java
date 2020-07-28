@@ -1,6 +1,7 @@
 package com.javaex.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +34,10 @@ public class BlogDao {
 		return sqlSession.update("blog.updateBlogBasic", blogVo);
 	}
 
-	public List<BlogVo> selectByKeyword(String keyword) {
+	public List<BlogVo> selectByKeyword(Map<String, String> sMap) {
 		System.out.println("blogDao.selectByKeyword");
 		
-		return sqlSession.selectList("blog.selectByKeyword", keyword);
+		return sqlSession.selectList("blog.selectByKeyword", sMap);
 	}
 
 }

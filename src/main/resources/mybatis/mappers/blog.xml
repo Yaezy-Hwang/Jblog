@@ -28,11 +28,27 @@
      		   	   to_char(u.joindate, 'yyyy-mm-dd') "joinDate"
 			FROM blog b, users u
 			WHERE b.id = u.id
-			AND b.id LIKE '%'|| #{keyword} ||'%'
-			OR u.username LIKE '%'|| #{keyword} ||'%'
-			OR b.blogtitle LIKE '%'|| #{keyword} ||'%'
-
-		 ]]>
+		]]>
+			<choose>
+				<when test="kwdOpt == 'optTitle'"> <!-- 제목 검색일 경우 -->
+					<![CDATA[
+						AND b.blogtitle LIKE '%'|| #{keyword} ||'%'
+					]]>
+				</when>
+				<when test="kwdOpt == 'optName'">
+					<![CDATA[
+						AND b.id LIKE '%'|| #{keyword} ||'%'
+						OR u.username LIKE '%'|| #{keyword} ||'%'
+					]]>
+				</when>
+				<otherwise>
+					<![CDATA[
+						AND b.id LIKE '%'|| #{keyword} ||'%'
+						OR u.username LIKE '%'|| #{keyword} ||'%'
+						OR b.blogtitle LIKE '%'|| #{keyword} ||'%'
+					]]>
+				</otherwise>
+			</choose>
 	</select>
 
 	<insert id="insertBlog" parameterType="com.javaex.vo.UserVo">
